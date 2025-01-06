@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relay Control</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" crossorigin="anonymous">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="bg-gray-100 h-screen flex items-center justify-center">
+
+    <!-- Login Form (Initially Visible) -->
+    <div id="login-form" class="container p-4 bg-white rounded-lg shadow-lg max-w-md w-full">
+        <h1 class="text-center mb-4 text-3xl font-bold text-blue-600">Login</h1>
+        
+        <form id="login-form-submit" class="space-y-4">
+            <div>
+                <label for="username" class="text-gray-800 text-sm font-medium">Username:</label>
+                <input type="text" id="username" name="username" class="form-control mt-2 p-2 w-full border border-gray-300 rounded-lg" required>
+            </div>
+
+            <div>
+                <label for="password" class="text-gray-800 text-sm font-medium">Password:</label>
+                <input type="password" id="password" name="password" class="form-control mt-2 p-2 w-full border border-gray-300 rounded-lg" required>
+            </div>
+
+            <button type="submit" class="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                Login
+            </button>
+        </form>
+
+        <p id="login-message" class="mt-4 text-center text-sm text-gray-500"></p>
+    </div>
+
+    <!-- Relay Control Form (Initially Hidden) -->
+    <div id="relay-form" class="container p-4 bg-white rounded-lg shadow-lg max-w-md w-full" style="display: none;">
+        <h1 class="text-center mb-4 text-3xl font-bold text-blue-600">Relay Controller</h1>
+        <p class="text-center mb-4 text-lg text-gray-700">Use the form below to control the relays on the device.</p>
+        
+        <!-- Form -->
+        <form id="relay-control-form" class="space-y-4">
+            <div>
+                <label for="slot" class="text-gray-800 text-sm font-medium">Relay Slot (1-8):</label>
+                <input type="number" id="slot" name="slot" min="1" max="8" class="form-control mt-2 p-2 w-full border border-gray-300 rounded-lg" required>
+            </div>
+
+            <div>
+                <label for="state" class="text-gray-800 text-sm font-medium">State (true or false):</label>
+                <input type="text" id="state" name="state" class="form-control mt-2 p-2 w-full border border-gray-300 rounded-lg" required>
+            </div>
+
+            <button type="submit" class="w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600">
+                Submit
+            </button>
+        </form>
+
+        <!-- Response message -->
+        <p id="response-message" class="mt-4 text-center text-sm text-gray-500"></p>
+    </div>
+
+    <!-- Bootstrap JS (optional) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js" integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ==" crossorigin="anonymous"></script>
+
+    <script>
+        // Handle login form submission
+        $(document).ready(function () {
+            var authToken = '';  // To store the base64-encoded credentials
+
+            $("#login-form-submit").submit(function (event) {
+                event.preventDefault(); // Prevent page reload
+
+                var username = $("#username").val();
+                var password = $("#password").val();
+
+                // Base64 encode the username:password for basic auth
+                authToken = 'Basic ' + btoa(username + ":" + password);
+
+                // Perform AJAX login request
+                $.ajax({
+                    url: "/login", // Golang handler for login endpoint
+                    method: "POST",
+                    headers: {
+                        'Authorization': authToken  // Send the Basic Auth token here
+                    },
+                    success: function (response) {
+                        if (response.status === "success") {
+                            // Hide login form and show relay control form
+                            $("#login-form").hide();
+                            $("#relay-form").show();
+                        } else {
+                            // Display error message
+                            $("#login-message").text("Invalid username or password").addClass("text-red-600");
+                        }
+                    },
+                    error: function () {
+                        // Handle error
+                        $("#login-message").text("Error: Unable to authenticate").addClass("text-red-600");
+                    }
+                });
+            });
+
+            // Handle relay control form submission
+            $("#relay-control-form").submit(function (event) {
+                event.preventDefault(); // Prevent page reload
+
+                var slot = $("#slot").val();
+                var state = $("#state").val();
+
+                // Perform AJAX request to control relay
+                $.ajax({
+                    url: "/control", // Golang handler for controlling relay
+                    method: "GET",
+                    data: {
+                        slot: slot,
+                        state: state
+                    },
+                    headers: {
+                        'Authorization': authToken  // Include the Basic Auth token here
+                    },
+                    success: function (response) {
+                        // Show success message
+                        $("#response-message").text("Relay " + slot + " is now " + state + ".").addClass("text-green-600");
+                    },
+                    error: function () {
+                        // Show error message
+                        $("#response-message").text("Error: Unable to control relay").addClass("text-red-600");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

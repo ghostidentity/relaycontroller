@@ -1,0 +1,46 @@
+<config>
+<username>zerocore</username>
+<password>letmein</password>
+<serial>
+    <Name>COM3</Name>
+    <Baud>9600</Baud>
+    <Size>8</Size>
+    <Parity>None</Parity>
+    <StopBits>1</StopBits>
+    <ReadTimeout>1s</ReadTimeout>
+    <Relays>
+        <Relay>
+            <Slot>1</Slot>
+            <Action>false</Action>
+        </Relay>
+        <Relay>
+            <Slot>2</Slot>
+            <Action>false</Action>
+        </Relay>
+        <Relay>
+            <Slot>3</Slot>
+            <Action>false</Action>
+        </Relay>
+        <Relay>
+            <Slot>4</Slot>
+            <Action>false</Action>
+        </Relay>
+        <Relay>
+            <Slot>5</Slot>
+            <Action>false</Action>
+        </Relay>
+        <Relay>
+            <Slot>6</Slot>
+            <Action>false</Action>
+        </Relay>
+        <Relay>
+            <Slot>7</Slot>
+            <Action>false</Action>
+        </Relay>
+        <Relay>
+            <Slot>8</Slot>
+            <Action>false</Action>
+        </Relay>
+    </Relays>
+</serial>
+</config>
