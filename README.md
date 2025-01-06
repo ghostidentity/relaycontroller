@@ -18,9 +18,10 @@ chmod +x ftdicontroller
 You can use function calling to control the relay remotely but before that happens you need to expose your home IP to the internet or you can use Ngrok tunneling service to expose speficific port to handle the request.
 
 ## Notes
-1. COM3 is windowsbased while /dev/ttyUSB0 is linux based, u need to update the config.xml correctly.
+1. COM3 is windowsbased while /dev/ttyUSB0 is linux based, u need to update the config.xml correctly. 
 2. You can use the command below to list possible one to use, if incase the /dev/ttyUSB0 is not correct
 
 ```
  ls /dev/tty*
+ dmesg | grep -i ftdi
  ```
